@@ -1,11 +1,15 @@
-from PyQt6.QtWidgets import QHBoxLayout, QPlainTextEdit
-from factionWidget import factionWidget
-from cardWidget import cardWidget
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPlainTextEdit, QPushButton
+from cardLayout import CardLayout
 
-class factionLayout(QHBoxLayout):
+class FactionWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.addWidget(factionWidget())
+  
+
+class FactionLayout(QHBoxLayout):
+    def __init__(self):
+        super().__init__()
+        self.addWidget(FactionWidget())
         for _ in range(4):
-            self.addWidget(cardWidget())
+            self.addLayout(CardLayout())
         self.addWidget(QPlainTextEdit())

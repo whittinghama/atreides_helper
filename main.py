@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QApplication
-from mainWindow import mainWindow
+from mainWindow import MainWindow
 
 app = QApplication([])
 
-window = mainWindow()
+window = MainWindow()
 window.show()
 
 app.exec()
