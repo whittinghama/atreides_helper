@@ -1,56 +1,55 @@
-from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QMenu, QLabel
+from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QMenu
 from PyQt6.QtGui import QAction
 
-class CardButton(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        topMenu = QMenu()
-        wMenu = QMenu("Weapon")
-        dMenu = QMenu("Defence")
-        specMenu = QMenu("Special")
-
-        # Weapon menu actions
-        wPoiAction = QAction("Poison")
-        wProAction = QAction("Projectile")
-        wLasAction = QAction("Lasgun")
-
-        wMenu.addActions([wPoiAction, wProAction, wLasAction])
-
-        # Defence menu actions
-        dPoiAction = QAction("Poison")
-        dProAction = QAction("Projectile")
-
-        dMenu.addActions([dPoiAction, dProAction])
-
-        # Special menu actions
-        specHeroAction = QAction("Cheap Hero")
-        specKaraAction = QAction("Karama")
-        specMoveAction = QAction("Hajr (movement)")
-        specRevAction = QAction("Tleilaxu Ghola (revive)")
-        specStormAction = QAction("Weather Control")
-        specTruthAction = QAction("Truthtrance")
-        specWallAction = QAction("Family Atomics")
-
-        specMenu.addActions([specHeroAction, specKaraAction,specMoveAction, specRevAction, specStormAction, specTruthAction, specWallAction])
-
-        # Top menu actions
-        worthlessAction = QAction("Worthless Card")
-        unknownAction = QAction("Unknown Card")
-        clearAction = QAction("Clear")
-
-        topMenu.addMenu(wMenu)
-        topMenu.addMenu(dMenu)
-        topMenu.addMenu(specMenu)
-        topMenu.addActions([worthlessAction, unknownAction])
-        topMenu.addSeparator()
-        topMenu.addAction(clearAction)
-
-        button = QPushButton("Select Card")
-        button.setMenu(topMenu)
 
 class CardLayout(QVBoxLayout):
     def __init__(self):
         super().__init__()
-        self.addWidget(CardButton())
+
+        self.button = QPushButton("Select Card")
+
+        self.topMenu = QMenu(self.button)
+        self.wMenu = QMenu("Weapon")
+        self.dMenu = QMenu("Defence")
+        self.specMenu = QMenu("self.special")
+
+        # Weapon menu actions
+        self.wPoiAction = QAction("Poison")
+        self.wProAction = QAction("Projectile")
+        self.wLasAction = QAction("Lasgun")
+
+        self.wMenu.addActions([self.wPoiAction, self.wProAction, self.wLasAction])
+
+        # Defence menu actions
+        self.dPoiAction = QAction("Poison")
+        self.dProAction = QAction("Projectile")
+
+        self.dMenu.addActions([self.dPoiAction, self.dProAction])
+
+        # self.special menu actions
+        self.specHeroAction = QAction("Cheap Hero")
+        self.specKaraAction = QAction("Karama")
+        self.specMoveAction = QAction("Hajr (movement)")
+        self.specRevAction = QAction("Tleilaxu Ghola (revive)")
+        self.specStormAction = QAction("Weather Control")
+        self.specTruthAction = QAction("Truthtrance")
+        self.specWallAction = QAction("Family Atomics")
+
+        self.specMenu.addActions([self.specHeroAction, self.specKaraAction,self.specMoveAction, self.specRevAction, self.specStormAction, self.specTruthAction, self.specWallAction])
+
+        # Top menu actions
+        self.worthlessAction = QAction("Worthless Card")
+        self.unknownAction = QAction("Unknown Card")
+        self.clearAction = QAction("Clear")
+
+        self.topMenu.addMenu(self.wMenu)
+        self.topMenu.addMenu(self.dMenu)
+        self.topMenu.addMenu(self.specMenu)
+        self.topMenu.addActions([self.worthlessAction, self.unknownAction])
+        self.topMenu.addSeparator()
+        self.topMenu.addAction(self.clearAction)
+
+        self.button.setMenu(self.topMenu)
+
+        self.addWidget(self.button)
         self.addWidget(QLabel("placeholder"))
