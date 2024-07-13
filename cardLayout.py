@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QMenu
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QPixmap
 
 
 class CardLayout(QVBoxLayout):
@@ -11,7 +11,7 @@ class CardLayout(QVBoxLayout):
         self.topMenu = QMenu(self.button)
         self.wMenu = QMenu("Weapon")
         self.dMenu = QMenu("Defence")
-        self.specMenu = QMenu("self.special")
+        self.specMenu = QMenu("Special")
 
         # Weapon menu actions
         self.wPoiAction = QAction("Poison")
@@ -49,7 +49,15 @@ class CardLayout(QVBoxLayout):
         self.topMenu.addSeparator()
         self.topMenu.addAction(self.clearAction)
 
-        self.button.setMenu(self.topMenu)
+        self.topMenu.triggered.connect(self.menuTriggered)
 
+        self.button.setMenu(self.topMenu)
         self.addWidget(self.button)
-        self.addWidget(QLabel("placeholder"))
+
+
+        self.image = QLabel()
+        self.image.setPixmap(QPixmap("images/tcard_none.png"))
+        self.addWidget(self.image)
+
+    def menuTriggered(self, action):
+        print(super().geometry().height())
