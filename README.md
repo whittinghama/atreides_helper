@@ -2,11 +2,14 @@
 
 A PyQt6 based GUI for keeping track of information gathered whilst playing as House Atreides in the Dune board game
 
-## Usage
+## "Installation" and usage
 
 1. Clone the repo
 2. `pip install -r requirements.txt`
 3. `python main.py`
+4. Select which factions you are playing against
+5. Use the "Select card" menu buttons to display cards as and when they're known
+  - The text box on the right of each row can be used for other notes etc.
 
 ## Screenshots
 
