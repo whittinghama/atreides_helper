@@ -1,10 +1,11 @@
-from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QMenu
+from PyQt6.QtCore import QRect, Qt
+from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QLabel, QMenu
 from PyQt6.QtGui import QAction, QPixmap
-
 
 class CardLayout(QVBoxLayout):
     def __init__(self):
         super().__init__()
+        self.setContentsMargins(0,0,0,0)
 
         self.button = QPushButton("Select Card")
 
@@ -69,10 +70,22 @@ class CardLayout(QVBoxLayout):
         self.button.setMenu(self.topMenu)
         self.addWidget(self.button)
 
+        self.image = QPixmap("images/tcard_none.png")
 
-        self.image = QLabel()
-        self.image.setPixmap(QPixmap("images/tcard_none.png"))
-        self.addWidget(self.image)
+        self.imageLabel = QLabel()
+        self.imageLabel.setPixmap(self.image)
+        self.addWidget(self.imageLabel)
 
     def menuTriggered(self, action):
-        self.image.setPixmap(QPixmap(f"images/{action.data()}.png"))
+        self.image = QPixmap(f"images/{action.data()}.png")
+        self.setScaledImage()
+
+    def setGeometry(self, rect: QRect) -> None:
+        super().setGeometry(rect)
+        self.setScaledImage()
+
+    def setScaledImage(self):
+        size = self.imageLabel.geometry().size()
+        scaledImage = self.image.scaled(size, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.imageLabel.setPixmap(scaledImage)
+        

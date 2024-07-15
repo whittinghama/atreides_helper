@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QDialogButtonBox, QFormLayout, QDialog, QCheckBox
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QResizeEvent
+from PyQt6.QtCore import Qt
 
 from factionLayout import FactionLayout
 
@@ -45,9 +46,11 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         for faction in factions:
             layout.addLayout(FactionLayout(faction))
-            if faction == "Harkonnen":
-                layout.addLayout(FactionLayout(faction)) # Add a second row for Harkonnen since they can have 8 cards
 
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+
+    def resizeEvent(self, a0: QResizeEvent | None) -> None:
+        if not self.isMinimized():
+            self.showMaximized()
