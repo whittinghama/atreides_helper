@@ -53,19 +53,25 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         allFactions = QHBoxLayout()
 
-        self.bidLayout = BidLayout(factionStrings)
-        self.bidLayout.cardDrawn.connect(self.assignCard)
-        layout.addLayout(self.bidLayout)
-
         for faction in factionStrings:
             self.factionLayouts[faction] = FactionLayout(faction)
             allFactions.addLayout(self.factionLayouts[faction])
 
+        self.bidLayout = BidLayout(factionStrings, self.deck.get_stats().keys())
+        self.bidLayout.cardDrawn.connect(self.assignCard)
+        self.initialCardAssignment(factionStrings)
+        self.bidLayout.updateStats(self.deck.get_stats())
+
+        layout.addLayout(self.bidLayout)
         layout.addLayout(allFactions)
 
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+
+    def initialCardAssignment(self, factionStrings):
+        for faction in factionStrings:
+            self.assignCard("tcard_base", faction)
 
     def assignCard(self, card: str, faction: str):
         if card == "tcard_base":
@@ -77,3 +83,4 @@ class MainWindow(QMainWindow):
             self.factionLayouts[faction].assignCard(card)
         else:
             self.deck.discard_card(card)
+        self.bidLayout.updateStats(self.deck.get_stats())

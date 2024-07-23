@@ -7,18 +7,18 @@ from cardLayout import CardLayout
 
 class FactionLayout(QVBoxLayout):
 
-    cardMap = {"tcard_weap_poi" : "Weapon: Poison",
-               "tcard_weap_pro" : "Weapon: Projectile",
-               "tcard_weap_las" : "Weapon: Lasgun",
-               "tcard_def_poi" : "Defence: Poison",
-               "tcard_def_pro" : "Defence: Projectile",
-               "tcard_spec_kara" : "Special: Karama",
-               "tcard_spec_hero" : "Special: Hero",
-               "tcard_spec_move" : "Special: Hajr (Move)",
-               "tcard_spec_rev" : "Special: Revive",
-               "tcard_spec_storm" : "Special: Storm",
-               "tcard_spec_truth" : "Special: Truthtrance",
-               "tcard_spec_wall" : "Special: Wall bomb",
+    cardMap = {"tcard_weap_poi" : "Weapon - Poison",
+               "tcard_weap_pro" : "Weapon - Projectile",
+               "tcard_weap_las" : "Weapon - Lasgun",
+               "tcard_def_poi" : "Defence - Poison",
+               "tcard_def_pro" : "Defence - Projectile",
+               "tcard_spec_kara" : "Special - Karama",
+               "tcard_spec_hero" : "Special - Hero",
+               "tcard_spec_move" : "Special - Hajr (Move)",
+               "tcard_spec_rev" : "Special - Revive",
+               "tcard_spec_storm" : "Special - Storm",
+               "tcard_spec_truth" : "Special - Truthtrance",
+               "tcard_spec_wall" : "Special - Wall bomb",
                "tcard_worthless" : "Worthless",
                "tcard_base" : "Unknown card"}
 

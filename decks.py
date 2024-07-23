@@ -1,4 +1,19 @@
 class TreacheryDeck:
+
+    cardMap = {"tcard_weap_poi" : "Weapon - Poison",
+               "tcard_weap_pro" : "Weapon - Projectile",
+               "tcard_weap_las" : "Weapon - Lasgun",
+               "tcard_def_poi" : "Defence - Poison",
+               "tcard_def_pro" : "Defence - Projectile",
+               "tcard_spec_kara" : "Special - Karama",
+               "tcard_spec_hero" : "Special - Hero",
+               "tcard_spec_move" : "Special - Hajr (Move)",
+               "tcard_spec_rev" : "Special - Revive",
+               "tcard_spec_storm" : "Special - Storm",
+               "tcard_spec_truth" : "Special - Truthtrance",
+               "tcard_spec_wall" : "Special - Wall bomb",
+               "tcard_worthless" : "Worthless"}
+
     def __init__(self):
         self.card_types = {"tcard_weap_poi" : 4,
                            "tcard_weap_pro" : 4,
@@ -50,6 +65,16 @@ class TreacheryDeck:
         else:
             self.drawn_cards.remove(card)
 
+    def get_stats(self):
+        stats = {}
+        stats["Remaining Cards"] = self.remaining_cards()
+        stats["Unknown Cards"] = self.unknown_cards
+        for card_type in self.card_types.keys():
+            prob = self.probability_of_card(card_type)
+            prob = round(prob * 100, 2)
+            stats[self.cardMap[card_type]] = prob
+        return stats
+
     def remaining_cards(self):
         return len(self.deck) - self.unknown_cards
 
@@ -65,7 +90,49 @@ class TreacheryDeck:
         drawn_count = self.drawn_cards.count(card_type)
         total_count = self.card_types[card_type]
         if drawn_count >= total_count:
-            return 0.0
+            return 0
+        remaining = self.remaining_cards()
+        remaining_known = sum(1 for card in self.deck if card == card_type)
+        return remaining_known / remaining if remaining > 0 else 0
+
+class SpiceDeck:
+    def __init__(self):
+        self.card_types = {"Spice" : 15,
+                           "Worm" : 6}
+        
+        self.deck = self._generate_deck()
+        self.drawn_cards = []
+
+    def _generate_deck(self):
+        deck = []
+        for card_type, count in self.card_types.items():
+            deck.extend([card_type] * count)
+        return deck
+    
+    def draw_card(self, card: str):
+        if not self.deck:
+            raise ValueError("All cards have been drawn")
+        if card:
+            if card in self.deck:
+                self.deck.remove(card)
+            else:
+                raise ValueError("Card not in deck")
+        else:
+            raise ValueError("Card must be specified")
+        self.drawn_cards.append(card)
+
+    def get_stats(self):
+        stats = {
+            "Spice" : self.probability_of_card("Spice"),
+            "Worm" : self.probability_of_card("Worm")
+        }
+        return stats
+
+    def probability_of_card(self, card_type):
+        drawn_count = self.drawn_cards.count(card_type)
+        total_count = self.card_types[card_type]
+        if drawn_count >= total_count:
+            return 0
         remaining = self.remaining_cards()
         remaining_known = sum(1 for card in self.deck if card == card_type)
         return remaining_known / remaining if remaining > 0 else 0
