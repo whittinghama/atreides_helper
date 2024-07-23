@@ -1,11 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QDialogButtonBox, QHBoxLayout, QDialog, QCheckBox
+from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QDialogButtonBox, QHBoxLayout, QDialog, QCheckBox, QPushButton, QLabel
 from PyQt6.QtGui import QIcon, QResizeEvent
 from PyQt6.QtCore import Qt
 
 from factionLayout import FactionLayout
 from bidLayout import BidLayout
 from decks import TreacheryDeck
-
+from menus import CardMenu
+from maps import cardMap
 
 class FactionDialog(QDialog):
     def __init__(self, parent=None):
@@ -19,6 +20,16 @@ class FactionDialog(QDialog):
         for box in self.factionBoxes:
             self.layout.addWidget(box)
 
+        self.cardButton = QPushButton("Select Card")
+        self.cardMenu = CardMenu(self.cardButton)
+        self.cardButton.setMenu(self.cardMenu)
+        self.cardLabel = QLabel("Choose your starting card")
+        self.cardMenu.triggered.connect(self.cardMenuTriggered)
+        self.ownCard = "tcard_none"
+
+        self.layout.addWidget(self.cardButton)
+        self.layout.addWidget(self.cardLabel)
+
         self.buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
@@ -26,6 +37,10 @@ class FactionDialog(QDialog):
         self.layout.addWidget(self.buttons)
 
         self.setLayout(self.layout)
+
+    def cardMenuTriggered(self, action):
+        self.cardLabel.setText(cardMap[action.data()])
+        self.ownCard = action.data()
 
 
 class MainWindow(QMainWindow):
@@ -40,7 +55,7 @@ class MainWindow(QMainWindow):
 
         dlg = FactionDialog(self)
 
-        factionStrings = []
+        factionStrings = ["Atreides"]
         self.factionLayouts = {}
 
         if dlg.exec():
@@ -59,7 +74,7 @@ class MainWindow(QMainWindow):
 
         self.bidLayout = BidLayout(factionStrings, self.deck.get_stats().keys())
         self.bidLayout.cardDrawn.connect(self.assignCard)
-        self.initialCardAssignment(factionStrings)
+        self.initialCardAssignment(factionStrings, dlg.ownCard)
         self.bidLayout.updateStats(self.deck.get_stats())
 
         layout.addLayout(self.bidLayout)
@@ -69,9 +84,12 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-    def initialCardAssignment(self, factionStrings):
+    def initialCardAssignment(self, factionStrings, ownCard):
         for faction in factionStrings:
-            self.assignCard("tcard_base", faction)
+            if faction == "Atreides":
+                self.assignCard(ownCard, faction)
+            else:
+                self.assignCard("tcard_base", faction)
 
     def assignCard(self, card: str, faction: str):
         if card == "tcard_base":

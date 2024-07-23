@@ -1,26 +1,11 @@
-from PyQt6.QtWidgets import QVBoxLayout, QFormLayout, QPlainTextEdit, QLabel
+from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QPlainTextEdit, QLabel
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import QRect, Qt
 
 from cardLayout import CardLayout
-
+from maps import cardMap
 
 class FactionLayout(QVBoxLayout):
-
-    cardMap = {"tcard_weap_poi" : "Weapon - Poison",
-               "tcard_weap_pro" : "Weapon - Projectile",
-               "tcard_weap_las" : "Weapon - Lasgun",
-               "tcard_def_poi" : "Defence - Poison",
-               "tcard_def_pro" : "Defence - Projectile",
-               "tcard_spec_kara" : "Special - Karama",
-               "tcard_spec_hero" : "Special - Hero",
-               "tcard_spec_move" : "Special - Hajr (Move)",
-               "tcard_spec_rev" : "Special - Revive",
-               "tcard_spec_storm" : "Special - Storm",
-               "tcard_spec_truth" : "Special - Truthtrance",
-               "tcard_spec_wall" : "Special - Wall bomb",
-               "tcard_worthless" : "Worthless",
-               "tcard_base" : "Unknown card"}
 
     def __init__(self, faction: str):
         super().__init__()
@@ -37,24 +22,25 @@ class FactionLayout(QVBoxLayout):
         
         self.numCards =  8 if faction == "Harkonnen" else 4
         self.cardLabels = []
-        self.cardFormLayout = QFormLayout()
+        self.cardGridLayout = QGridLayout()
         
         self.addWidget(self.titleLabel, alignment=Qt.AlignmentFlag.AlignCenter)
 
         for i in range(self.numCards):
+            leftLabel = QLabel(f"Card {i+1}:")
             label = QLabel("No Card")
             self.cardLabels.append(label)
-            self.cardFormLayout.addRow(f"Card {i+1}", self.cardLabels[i])
+            self.cardGridLayout.addWidget(leftLabel, i, 0, alignment=Qt.AlignmentFlag.AlignRight)
+            self.cardGridLayout.addWidget(self.cardLabels[i], i, 1, alignment=Qt.AlignmentFlag.AlignLeft)
 
-        self.addLayout(self.cardFormLayout)
+        self.addLayout(self.cardGridLayout)
         
         self.addWidget(QPlainTextEdit())
 
     def assignCard(self, card: str):
-        print(f"{self.faction}: Drawn {self.cardMap[card]}")
         for i in range(self.numCards):
             if self.cardLabels[i].text() != "No Card":
                 continue
             else:
-                self.cardLabels[i].setText(self.cardMap[card])
+                self.cardLabels[i].setText(cardMap[card])
                 break
