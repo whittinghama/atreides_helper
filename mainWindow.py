@@ -1,8 +1,10 @@
-from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QDialogButtonBox, QFormLayout, QDialog, QCheckBox
+from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QDialogButtonBox, QHBoxLayout, QDialog, QCheckBox
 from PyQt6.QtGui import QIcon, QResizeEvent
 from PyQt6.QtCore import Qt
 
 from factionLayout import FactionLayout
+from bidLayout import BidLayout
+from decks import TreacheryDeck
 
 
 class FactionDialog(QDialog):
@@ -27,6 +29,9 @@ class FactionDialog(QDialog):
 
 
 class MainWindow(QMainWindow):
+
+    deck = TreacheryDeck()
+
     def __init__(self):
         super().__init__()
 
@@ -35,22 +40,40 @@ class MainWindow(QMainWindow):
 
         dlg = FactionDialog(self)
 
-        factions = []
+        factionStrings = []
+        self.factionLayouts = {}
+
         if dlg.exec():
             for box in dlg.factionBoxes:
                 if box.isChecked():
-                    factions.append(box.text())
+                    factionStrings.append(box.text())
         else:
             exit()
 
         layout = QVBoxLayout()
-        for faction in factions:
-            layout.addLayout(FactionLayout(faction))
+        allFactions = QHBoxLayout()
+
+        self.bidLayout = BidLayout(factionStrings)
+        self.bidLayout.cardDrawn.connect(self.assignCard)
+        layout.addLayout(self.bidLayout)
+
+        for faction in factionStrings:
+            self.factionLayouts[faction] = FactionLayout(faction)
+            allFactions.addLayout(self.factionLayouts[faction])
+
+        layout.addLayout(allFactions)
 
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-    def resizeEvent(self, a0: QResizeEvent | None) -> None:
-        if not self.isMinimized():
-            self.showMaximized()
+    def assignCard(self, card: str, faction: str):
+        if card == "tcard_base":
+            self.deck.draw_card(False)
+        else:
+            self.deck.draw_card(True, card)
+
+        if faction:
+            self.factionLayouts[faction].assignCard(card)
+        else:
+            self.deck.discard_card(card)

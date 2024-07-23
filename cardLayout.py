@@ -1,15 +1,20 @@
-from PyQt6.QtCore import QRect, Qt
+from PyQt6.QtCore import QRect, Qt, pyqtSignal
 from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QLabel, QMenu
 from PyQt6.QtGui import QAction, QPixmap
 
 class CardLayout(QVBoxLayout):
-    def __init__(self):
+
+    cardDrawn = pyqtSignal(str, str)
+
+    def __init__(self, factions):
         super().__init__()
         self.setContentsMargins(0,0,0,0)
 
-        self.button = QPushButton("Select Card")
+        self.currentCard = "tcard_none"
 
-        self.topMenu = QMenu(self.button)
+        self.selectButton = QPushButton("Select Card")
+
+        self.selectMenu = QMenu(self.selectButton)
         self.wMenu = QMenu("Weapon")
         self.dMenu = QMenu("Defence")
         self.specMenu = QMenu("Special")
@@ -58,17 +63,17 @@ class CardLayout(QVBoxLayout):
         self.unknownAction.setData("tcard_base")
         self.clearAction.setData("tcard_none")
 
-        self.topMenu.addMenu(self.wMenu)
-        self.topMenu.addMenu(self.dMenu)
-        self.topMenu.addMenu(self.specMenu)
-        self.topMenu.addActions([self.worthlessAction, self.unknownAction])
-        self.topMenu.addSeparator()
-        self.topMenu.addAction(self.clearAction)
+        self.selectMenu.addMenu(self.wMenu)
+        self.selectMenu.addMenu(self.dMenu)
+        self.selectMenu.addMenu(self.specMenu)
+        self.selectMenu.addActions([self.worthlessAction, self.unknownAction])
+        self.selectMenu.addSeparator()
+        self.selectMenu.addAction(self.clearAction)
 
-        self.topMenu.triggered.connect(self.menuTriggered)
+        self.selectMenu.triggered.connect(self.selectMenuTriggered)
 
-        self.button.setMenu(self.topMenu)
-        self.addWidget(self.button)
+        self.selectButton.setMenu(self.selectMenu)
+        self.addWidget(self.selectButton)
 
         self.image = QPixmap("images/tcard_none.png")
 
@@ -76,9 +81,31 @@ class CardLayout(QVBoxLayout):
         self.imageLabel.setPixmap(self.image)
         self.addWidget(self.imageLabel)
 
-    def menuTriggered(self, action):
+        self.factionButton = QPushButton("Winning Bid")
+        self.factionMenu = QMenu(self.factionButton)
+        self.factionActions = []
+        for faction in factions:
+            action = QAction(faction)
+            action.setData(faction)
+            self.factionActions.append(action)
+            
+        self.factionMenu.addActions(self.factionActions)
+        self.factionMenu.addSeparator()
+        self.factionNoAction = QAction("No Winning Bid")
+        self.factionMenu.addAction(self.factionNoAction)
+
+        self.factionMenu.triggered.connect(self.factionMenuTriggered)
+        self.factionButton.setMenu(self.factionMenu)
+
+        self.addWidget(self.factionButton)
+
+    def selectMenuTriggered(self, action):
+        self.currentCard = action.data()
         self.image = QPixmap(f"images/{action.data()}.png")
-        self.setScaledImage()
+        self.setScaledImage()        
+
+    def factionMenuTriggered(self, action):
+        self.cardDrawn.emit(self.currentCard, action.data())
 
     def setGeometry(self, rect: QRect) -> None:
         super().setGeometry(rect)
