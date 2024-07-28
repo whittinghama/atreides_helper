@@ -1,6 +1,5 @@
-from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QDialogButtonBox, QHBoxLayout, QDialog, QCheckBox, QPushButton, QLabel
-from PyQt6.QtGui import QIcon, QResizeEvent
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QDialogButtonBox, QHBoxLayout, QDialog, QCheckBox, QPushButton, QLabel, QMessageBox
+from PyQt6.QtGui import QIcon
 
 from factionLayout import FactionLayout
 from bidLayout import BidLayout
@@ -29,6 +28,9 @@ class FactionDialog(QDialog):
 
         self.layout.addWidget(self.cardButton)
         self.layout.addWidget(self.cardLabel)
+
+        self.statsBox = QCheckBox("Enable Stats?")
+        self.layout.addWidget(self.statsBox)
 
         self.buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         self.buttons.accepted.connect(self.accept)
@@ -70,9 +72,15 @@ class MainWindow(QMainWindow):
 
         for faction in factionStrings:
             self.factionLayouts[faction] = FactionLayout(faction)
+            self.factionLayouts[faction].discarded.connect(self.discardCard)
             allFactions.addLayout(self.factionLayouts[faction])
 
-        self.bidLayout = BidLayout(factionStrings, self.deck.get_stats().keys())
+        if dlg.statsBox.isChecked():
+            stats = self.deck.get_stats().keys()
+        else:
+            stats = None
+
+        self.bidLayout = BidLayout(factionStrings, stats)
         self.bidLayout.cardDrawn.connect(self.assignCard)
         self.initialCardAssignment(factionStrings, dlg.ownCard)
         self.bidLayout.updateStats(self.deck.get_stats())
@@ -88,17 +96,34 @@ class MainWindow(QMainWindow):
         for faction in factionStrings:
             if faction == "Atreides":
                 self.assignCard(ownCard, faction)
+            elif faction == "Harkonnen":
+                self.deck.draw_card(False)
+                self.factionLayouts[faction].assignCard("tcard_base")
             else:
                 self.assignCard("tcard_base", faction)
 
     def assignCard(self, card: str, faction: str):
-        if card == "tcard_base":
-            self.deck.draw_card(False)
-        else:
-            self.deck.draw_card(True, card)
+        try:
+            if card == "tcard_base":
+                self.deck.draw_card(False)
+            else:
+                self.deck.draw_card(True, card)
 
-        if faction:
-            self.factionLayouts[faction].assignCard(card)
-        else:
-            self.deck.discard_card(card)
+            if faction:
+                self.factionLayouts[faction].assignCard(card)
+                if faction == "Harkonnen" and self.factionLayouts[faction].cardsHeld < 8:
+                    self.deck.draw_card(False)
+                    self.factionLayouts[faction].assignCard("tcard_base")
+            else:
+                self.deck.discard_card(card)
+            self.bidLayout.updateStats(self.deck.get_stats())
+        except ValueError as error:
+            print(error)
+            box = QMessageBox()
+            box.setText(str(error))
+            box.setIcon(QMessageBox.Icon.Warning)
+            box.exec()
+
+    def discardCard(self, card: str):
+        self.deck.discard_card(card)
         self.bidLayout.updateStats(self.deck.get_stats())

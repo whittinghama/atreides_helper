@@ -59,3 +59,13 @@ class CardMenu(QMenu):
         self.addActions([self.worthlessAction, self.unknownAction])
         self.addSeparator()
         self.addAction(self.clearAction)
+
+class DiscardMenu(QMenu):
+    def __init__(self, parent = None, cards = 4):
+        super().__init__(parent)
+        self.discardActions = []
+        for i in range(cards):
+            action = QAction(f"Card {i+1}")
+            action.setData(i)
+            self.discardActions.append(action)
+        self.addActions(self.discardActions)

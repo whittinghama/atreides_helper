@@ -1,7 +1,6 @@
 from maps import cardMap
 
 class TreacheryDeck:
-
     def __init__(self):
         self.card_types = {"tcard_weap_poi" : 4,
                            "tcard_weap_pro" : 4,
@@ -28,16 +27,14 @@ class TreacheryDeck:
         return deck
 
     def draw_card(self, known=True, card=None):
-        if not self.deck and self.unknown_cards == 0:
-            raise ValueError("All cards have been drawn")
+        if self.remaining_cards == 0:
+            self.reset_deck()
         if known:
             if card:
                 if card in self.deck:
                     self.deck.remove(card)
-                elif self.unknown_cards > 0:
-                    self.unknown_cards -= 1
                 else:
-                    raise ValueError("Card not in deck, and can't be unknown")
+                    raise ValueError("Card not in deck, all copies have been drawn")
             else:
                 raise ValueError("If card is known, card must be specified")
             self.drawn_cards.append(card)
@@ -70,9 +67,17 @@ class TreacheryDeck:
         return len(self.drawn_cards) + self.unknown_cards
 
     def reset_deck(self):
+        # Effectively reshuffles the discard pile
         self.deck = self._generate_deck()
-        self.drawn_cards = []
-        self.unknown_cards = 0
+
+        # Keep all cards still in play
+        for card in self.drawn_cards:
+            self.deck.remove(card)
+
+        print("RESHUFFLING")
+        print(self.deck)
+        print(self.drawn_cards)
+        print(self.unknown_cards)
 
     def probability_of_card(self, card_type):
         drawn_count = self.drawn_cards.count(card_type)
@@ -110,17 +115,19 @@ class SpiceDeck:
         self.drawn_cards.append(card)
 
     def get_stats(self):
-        stats = {
-            "Spice" : self.probability_of_card("Spice"),
-            "Worm" : self.probability_of_card("Worm")
-        }
+        stats = {}
+        for card_type in self.card_types.keys():
+            prob = self.probability_of_card(card_type)
+            prob = round(prob * 100, 2)
+            stats[card_type] = prob
         return stats
+
 
     def probability_of_card(self, card_type):
         drawn_count = self.drawn_cards.count(card_type)
         total_count = self.card_types[card_type]
         if drawn_count >= total_count:
             return 0
-        remaining = self.remaining_cards()
+        remaining = len(self.deck)
         remaining_known = sum(1 for card in self.deck if card == card_type)
         return remaining_known / remaining if remaining > 0 else 0

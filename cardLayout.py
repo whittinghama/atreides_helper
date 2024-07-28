@@ -53,6 +53,9 @@ class CardLayout(QVBoxLayout):
 
     def factionMenuTriggered(self, action):
         self.cardDrawn.emit(self.currentCard, action.data())
+        self.currentCard = "tcard_none"
+        self.image = QPixmap("images/tcard_none.png")
+        self.setScaledImage() 
 
     def setGeometry(self, rect: QRect) -> None:
         super().setGeometry(rect)
