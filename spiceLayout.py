@@ -3,9 +3,8 @@ from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QGrid
 from decks import SpiceDeck
 
 class SpiceLayout(QVBoxLayout):
-    def __init__(self, enableStats : bool):
+    def __init__(self):
         super().__init__()
-        self.statsEnabled = enableStats
         self.currentTurn = 0
 
         commonSizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -38,32 +37,31 @@ class SpiceLayout(QVBoxLayout):
 
         self.addLayout(self.topLayout)
 
-        if self.statsEnabled:
-            self.statsLayout = QGridLayout()
-            self.statsTitle = QLabel("Stats")
-            statsTitleFont = self.statsTitle.font()
-            statsTitleFont.setBold(True)
-            statsTitleFont.setPointSize(12)
-            self.statsTitle.setFont(statsTitleFont)
-            self.statsTitle.setSizePolicy(commonSizePolicy)
-            self.statsLayout.addWidget(self.statsTitle, 0, 0, 1, 2, alignment=(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop))
+        self.statsLayout = QGridLayout()
+        self.statsTitle = QLabel("Stats")
+        statsTitleFont = self.statsTitle.font()
+        statsTitleFont.setBold(True)
+        statsTitleFont.setPointSize(12)
+        self.statsTitle.setFont(statsTitleFont)
+        self.statsTitle.setSizePolicy(commonSizePolicy)
+        self.statsLayout.addWidget(self.statsTitle, 0, 0, 1, 2, alignment=(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop))
 
-            self.statsLabels = {}
-            row = 1
-            for stat in self.deck.get_stats().keys():
-                statLabelText = f"{stat}:"
-                statLabel = QLabel(statLabelText)
-                statLabel.setSizePolicy(commonSizePolicy)
-                valueLabel = QLabel("TBD %")
-                valueLabel.setSizePolicy(commonSizePolicy)
+        self.statsLabels = {}
+        row = 1
+        for stat in self.deck.get_stats().keys():
+            statLabelText = f"{stat}:"
+            statLabel = QLabel(statLabelText)
+            statLabel.setSizePolicy(commonSizePolicy)
+            valueLabel = QLabel("TBD %")
+            valueLabel.setSizePolicy(commonSizePolicy)
 
-                self.statsLabels[stat] = (statLabel, valueLabel)
-                self.statsLayout.addWidget(self.statsLabels[stat][0], row, 0, alignment=Qt.AlignmentFlag.AlignRight)
-                self.statsLayout.addWidget(self.statsLabels[stat][1], row, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-                row += 1
+            self.statsLabels[stat] = (statLabel, valueLabel)
+            self.statsLayout.addWidget(self.statsLabels[stat][0], row, 0, alignment=Qt.AlignmentFlag.AlignRight)
+            self.statsLayout.addWidget(self.statsLabels[stat][1], row, 1, alignment=Qt.AlignmentFlag.AlignLeft)
+            row += 1
 
-            self.updateStats()
-            self.addLayout(self.statsLayout)
+        self.updateStats()
+        self.addLayout(self.statsLayout)
 
         self.turnsLayout = QGridLayout()
         self.spiceLabels = []

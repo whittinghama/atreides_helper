@@ -6,8 +6,6 @@ from menus import DiscardMenu
 
 class FactionLayout(QVBoxLayout):
 
-    discarded = pyqtSignal(str)
-
     def __init__(self, faction: str):
         super().__init__()
         
@@ -59,7 +57,6 @@ class FactionLayout(QVBoxLayout):
 
     def discardMenuTriggered(self, action):
         cardNum = action.data()
-        self.discarded.emit(self.cards[cardNum])
         self.cards[cardNum] = "tcard_none"
         self.cardLabels[cardNum].setText("No Card")
         self.cardsHeld -= 1
